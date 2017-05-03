@@ -90,7 +90,7 @@ class SamlAuthenticator < ::Auth::OAuth2Authenticator
 
   def sync_groups(user, saml_groups)
 
-    return unless GlobalSetting.try(:saml_sync_groups) && GlobalSetting.try(:saml_sync_groups_list) && saml_groups.present?.present?
+    return unless GlobalSetting.try(:saml_sync_groups) && GlobalSetting.try(:saml_sync_groups_list) && saml_groups.present?
 
     total_group_list = GlobalSetting.try(:saml_sync_groups_list).split('|')
 
