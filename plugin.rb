@@ -94,7 +94,7 @@ class SamlAuthenticator < ::Auth::OAuth2Authenticator
 
     total_group_list = GlobalSetting.try(:saml_sync_groups_list).split('|')
 
-    user_group_list = groups
+    user_group_list = saml_groups
 
     groups_to_add = Group.where(name: total_group_list & user_group_list)
 
