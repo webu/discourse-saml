@@ -67,25 +67,34 @@ class SamlAuthenticator < ::Auth::OAuth2Authenticator
       result.omit_username = true
     end
 
-    sync_groups(result.user, auth) unless result.user.blank?
-
     result.extra_data = { saml_user_id: uid }
+
+    if GlobalSetting.try(:saml_sync_groups)
+      groups = auth.extra[:raw_info].attributes['memberOf']
+
+      if result.user.blank?
+        result.extra_data[:saml_groups] = groups
+      else
+        sync_groups(result.user, groups)
+      end
+    end
+
     result
   end
 
   def after_create_account(user, auth)
     ::PluginStore.set("saml", "saml_user_#{auth[:extra_data][:saml_user_id]}", {user_id: user.id })
 
-    sync_groups(user, auth)
+    sync_groups(user, auth[:extra_data][:saml_groups])
   end
 
-  def sync_groups(user, auth)
+  def sync_groups(user, saml_groups)
 
-    return unless GlobalSetting.try(:saml_sync_groups) && GlobalSetting.try(:saml_sync_groups_list) && auth.extra.present? && auth.extra[:raw_info].present?
+    return unless GlobalSetting.try(:saml_sync_groups) && GlobalSetting.try(:saml_sync_groups_list) && saml_groups.present?.present?
 
     total_group_list = GlobalSetting.try(:saml_sync_groups_list).split('|')
 
-    user_group_list = auth.extra[:raw_info].attributes['memberOf']
+    user_group_list = groups
 
     groups_to_add = Group.where(name: total_group_list & user_group_list)
 
