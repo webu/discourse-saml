@@ -23,6 +23,8 @@ class SamlAuthenticator < ::Auth::OAuth2Authenticator
                       :attribute_statements => { :nickname => ['screenName'] },
                       :assertion_consumer_service_url => Discourse.base_url + "/auth/saml/callback",
                       :custom_url => (GlobalSetting.try(:saml_request_method) == 'post') ? "/discourse_saml" : nil,
+                      :certificate => GlobalSetting.try(:saml_sp_certificate),
+                      :private_key => GlobalSetting.try(:saml_sp_private_key),
                       :security => {
                         authn_requests_signed: GlobalSetting.try(:saml_authn_requests_signed) ? true : false,
                         want_assertions_signed: GlobalSetting.try(:saml_want_assertions_signed) ? true : false
