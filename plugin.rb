@@ -28,6 +28,7 @@ class SamlAuthenticator < ::Auth::OAuth2Authenticator
                       :security => {
                         authn_requests_signed: GlobalSetting.try(:saml_authn_requests_signed) ? true : false,
                         want_assertions_signed: GlobalSetting.try(:saml_want_assertions_signed) ? true : false
+                        signature_method: XMLSecurity::Document::RSA_SHA1
                       }
   end
 
