@@ -64,7 +64,7 @@ class SamlAuthenticator < ::Auth::OAuth2Authenticator
       result.user = User.where(id: saml_user_info[:user_id]).first
     end
 
-    result.user ||= User.where(email: Email.downcase(result.email)).first
+    result.user ||= User.find_by_email(result.email)
 
     if saml_user_info.nil? && result.user
       ::PluginStore.set("saml", "saml_user_#{uid}", {user_id: result.user.id })
