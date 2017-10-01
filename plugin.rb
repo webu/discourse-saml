@@ -41,6 +41,11 @@ class SamlAuthenticator < ::Auth::OAuth2Authenticator
       ::PluginStore.set("saml", "saml_last_auth_extra", auth.extra.inspect)
     end
 
+    if GlobalSetting.try(:saml_debug_auth)
+      log("saml_auth_info: #{auth[:info].inspect}")
+      log("saml_auth_extra: #{auth.extra.inspect}")
+    end
+
     uid = auth[:uid]
     result.name = auth[:info].name || uid
     result.username = uid
@@ -93,6 +98,10 @@ class SamlAuthenticator < ::Auth::OAuth2Authenticator
     sync_email(result.user, Email.downcase(result.email)) if GlobalSetting.try(:saml_sync_email) && result.user.present? && result.user.email != Email.downcase(result.email)
 
     result
+  end
+
+  def log(info)
+    Rails.logger.warn("SAML Debugging: #{info}") if GlobalSetting.try(:saml_debug_auth)
   end
 
   def after_create_account(user, auth)
