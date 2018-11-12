@@ -65,6 +65,7 @@ class SamlAuthenticator < ::Auth::OAuth2Authenticator
                       certificate: GlobalSetting.try(:saml_sp_certificate),
                       private_key: GlobalSetting.try(:saml_sp_private_key),
                       security: {
+                        logout_requests_signed: !!GlobalSetting.try(:saml_logout_requests_signed),
                         authn_requests_signed: !!GlobalSetting.try(:saml_authn_requests_signed),
                         want_assertions_signed: !!GlobalSetting.try(:saml_want_assertions_signed),
                         signature_method: XMLSecurity::Document::RSA_SHA1
